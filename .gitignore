@@ -1,0 +1,66 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*   
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Xcode
+*.xcuserstate
+*.xcuserdata
+*.xccheckout
+*.xcodeproj/xcuserdata
+*.xcodeproj/project.xcworkspace
+*.xcworkspace/xcuserdata
+*.xcworkspace/xcshareddata/schemes
+build/
+DerivedData/
+*.swp
+*.xcsettings
+.idea/
+
+# Swift Package Manager
+.build/
+Package.resolved
+.swiftpm/
+
+# CocoaPods
+Pods/
+*.lock
+.xcodeproj/project.xcworkspace/xcuserdata
+.xcodeproj/project.xcworkspace/xcshareddata
+.xcodeproj/xcuserdata
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+*.ipa
+*.apk
+
+# Archives
+*.xcarchive
+
+# SwiftPM Package resolution
+.package.resolved
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# IDE Preferences
+xcdebugger/
+
