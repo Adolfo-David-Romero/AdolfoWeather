@@ -13,7 +13,40 @@ class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
             super.init()
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        }
+            locationManager.requestWhenInUseAuthorization()
+    }
     
+    func startUpdatingLocation() {
+            locationManager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else{
+            
+            print("Location Manager: error")
+            return
+        }
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
+        print("Location Manager:")
+        print("Latitude: \(latitude), Longitude: \(longitude)")
+        locationManager.stopUpdatingLocation()
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        
+        print("Location Manager: error \(error)")
+    }
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+            switch status {
+            case .authorizedWhenInUse, .authorizedAlways:
+                print("Location Manager: authorized ")
+                locationManager.startUpdatingLocation()
+                break
+            case .denied, .restricted:
+                print("Location Manager: Location access N/A.")
+            default:
+                break
+            }
+    }
     
 }
