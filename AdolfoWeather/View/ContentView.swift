@@ -18,10 +18,9 @@ struct ContentView: View {
 //    @State private var condition: String = ""
 //    @State private var city_name: String = ""
 //    @State private var country_name: String = ""
-    @StateObject var vm = WeatherViewModel()
-    let lm = LocationManager()
+    @StateObject private var vm = WeatherViewModel()
+
     var body: some View {
-        
         NavigationStack{
             VStack {
                 Button(
@@ -30,7 +29,7 @@ struct ContentView: View {
                         Task{
                             do{
                                 try await
-                                vm.getGeneralWeatherResponse(userCoordinate:   "")
+                                vm.getGeneralWeatherResponse()
                             }catch {
                                 
                                 print("Button Pressed: Error \(error)")
@@ -40,18 +39,18 @@ struct ContentView: View {
                     },
                     label: {
                         Text("Retrieve Weather").font(.headline).foregroundStyle(.white)
-                    }).padding(.all, 13.0).background(Color(.blue)).clipShape(.capsule)
+                    }).padding(.all).background(Color(.blue)).clipShape(.capsule)
                 List{
                     Section("Tempature Data:"){
-                        ResponseComponentRowView(title: "Tempature in Cº",response: .constant("Tempature in Cº:"))
+                        
                         
                         
                     }
                     Section("Location Data"){
-                        ResponseComponentRowView(title: "Tempature in Cº",response: .constant("Tempature in Cº:"))
+                        
                     }
                     
-                }.listStyle(.automatic)
+                }.listStyle(.automatic).clipShape(.rect(cornerRadii: RectangleCornerRadii(topLeading: 50, topTrailing: 50))).ignoresSafeArea()
                 
             }.navigationTitle("Adolfo Weather")
             
@@ -60,5 +59,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(WeatherViewModel())
 }

@@ -7,64 +7,46 @@
 
 import Foundation
 import SwiftUI
+import CoreLocation
 // API KEY -> "dc7553a3d26141f18e6201809241011"
 class WeatherViewModel: ObservableObject{
-    @StateObject var locationManager = LocationManager()
     @Published var weatherInfo : [GeneralWeather] = []
     @Published var locationInfo : [Location] = []
+    @Published var errorMessage: String? = nil
     @Published var showError = false
+    private let lm = LocationManager()
     
     //API/URL Info
     let apiKey = "key=dc7553a3d26141f18e6201809241011&"
     let baseUrl = "https://api.weatherapi.com/v1/current.json?"
     
-    func getGeneralWeatherResponse (userCoordinate: String) async throws{
-        let urlStr = baseUrl + apiKey + ("q=\(userCoordinate)&aqi=yes")
-        print("WeatherViewModel: URL -> \(urlStr)")
-        let url = URL(string: urlStr)
-        
-        let task = URLSession.shared.dataTask(with: url!){ data, response, error in
-            
-            guard error  == nil  else{
-                
-                print("WeatherViewModel getGeneralWeather(): ERROR -> \(String(describing: error))")
-                return
-            }
-            
-            guard let data = data else {
-                print("WeatherViewModel getGeneralWeather(): ERROR data not found")
-                return
-            }
-            
-            do {
-                
-                let info = try JSONDecoder().decode([GeneralWeather].self, from: data)
-                print(info.count)
-                DispatchQueue.main.async {
-                    self.weatherInfo = info
-                }
-                
-            }catch {
-                
-                print("WeatherViewModel getGeneralWeather(): ERROR -> \(error)")
-            }
+    
+    func getGeneralWeatherResponse() async{
+        guard let latitude = lm.latitude,
+              let longitude = lm.longitude else{
+            errorMessage = "Location unavailable"
+            showError = true
+            return
         }
         
-        task.resume()
-    }
-    
-    func getLocationResponse() async throws {
-        
-//        let urlStr = baseUrl+"users"
-//        print(urlStr)
-//        let url = URL(string: urlStr)!
-//        
-//        let (data, _) =  try await URLSession.shared.data(for: URLRequest(url:url))
-//        
-//        let result = try JSONDecoder().decode([User].self, from: data)
-//        print(result.count)
-//        DispatchQueue.main.async {
-//            self.users = result
-//        }
-    }
+        let urlStr = baseUrl + apiKey + ("q=\(String(lm.latitude!)),\(String(lm.longitude!))&aqi=yes")
+        print("WeatherViewModel getGeneralWeatherResponse(): URL -> \(urlStr)")
+        let url = URL(string: urlStr)
+        guard let url = URL(string: urlStr) else{
+            errorMessage = "Invalid URL"
+            showError = true
+            return
+        }
+        do{
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let info = try JSONDecoder().decode([GeneralWeather].self, from: data)
+            
+            DispatchQueue.main.async {
+                self.weatherInfo = info
+            }
+        } catch {
+                    errorMessage = "Failed to fetch weather data: \(error.localizedDescription)"
+                    showError = true
+                }
+        }
 }

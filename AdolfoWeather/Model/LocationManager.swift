@@ -9,6 +9,9 @@ import CoreLocation
 
 class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
     let locationManager = CLLocationManager()
+    @Published var latitude: Double? = nil
+    @Published var longitude: Double? = nil
+    @Published var errorMessage: String? = nil
     
     override init() {
             super.init()
@@ -24,30 +27,29 @@ class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
     //manage location updates
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else{
-            print("Location Manager: error")
+            errorMessage = "Location Manager: Failed to retrieve location"
             return
         }
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-        print("Location Manager:")
-        print("Latitude: \(latitude), Longitude: \(longitude)")
+        latitude = location.coordinate.latitude
+        longitude = location.coordinate.longitude
+        print("Location Manager: Latitude -> \(String(describing: latitude)), Longitude -> \(String(describing: longitude))")
         locationManager.stopUpdatingLocation()
     }
     
     //hanling error on fail
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        print("Location Manager: error \(error)")
+         errorMessage = "Location Manager error: \(error.localizedDescription)"
     }
     
     //Manage permission changes
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
             switch status {
             case .authorizedWhenInUse, .authorizedAlways:
-                print("Location Manager: authorized ")
-                locationManager.startUpdatingLocation()
+                print("Location Manager: Authorized")
+                startUpdatingLocation()
                 break
             case .denied, .restricted:
-                print("Location Manager: Location access N/A.")
+                errorMessage = "Location Manager: Location access denied. Please enable location permissions in settings."
             default:
                 break
             }
