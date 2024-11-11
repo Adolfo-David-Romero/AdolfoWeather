@@ -10,43 +10,57 @@ import SwiftUI
 import CoreLocation
 // API KEY -> "dc7553a3d26141f18e6201809241011"
 class WeatherViewModel: ObservableObject{
-    @Published var weatherInfo : [GeneralWeather] = []
     @Published var locationInfo : [Location] = []
-    @Published var errorMessage: String? = nil
-    @Published var showError = false
-    private let lm = LocationManager()
+    @Published var currentWeatherInfo : [Current] = []
+    let lm = LocationManager()
     
     //API/URL Info
     let apiKey = "key=dc7553a3d26141f18e6201809241011&"
     let baseUrl = "https://api.weatherapi.com/v1/current.json?"
     
     
-    func getGeneralWeatherResponse() async{
+    func fetchWeatherData() async throws -> [WeatherModel]{
+        //get Lat and Long values from user using location manager
         guard let latitude = lm.latitude,
               let longitude = lm.longitude else{
-            errorMessage = "Location unavailable"
-            showError = true
-            return
+            throw ErrorCases.invalidCoordinates
         }
         
-        let urlStr = baseUrl + apiKey + ("q=\(String(lm.latitude!)),\(String(lm.longitude!))&aqi=yes")
-        print("WeatherViewModel getGeneralWeatherResponse(): URL -> \(urlStr)")
-        let url = URL(string: urlStr)
+        let urlStr = "\(baseUrl)\(apiKey)q=\(latitude),\(longitude)&aqi=yes"
         guard let url = URL(string: urlStr) else{
-            errorMessage = "Invalid URL"
-            showError = true
-            return
+            throw ErrorCases.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else{
+            throw ErrorCases.invalidResponse
         }
         do{
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let info = try JSONDecoder().decode([GeneralWeather].self, from: data)
-            
-            DispatchQueue.main.async {
-                self.weatherInfo = info
-            }
-        } catch {
-                    errorMessage = "Failed to fetch weather data: \(error.localizedDescription)"
-                    showError = true
-                }
+            let decoder = JSONDecoder()
+            return try decoder.decode([WeatherModel].self, from: data)
+        }catch{
+            throw ErrorCases.invalidData
         }
+        
+    }
+}
+enum ErrorCases: LocalizedError{
+    case invalidCoordinates
+    case invalidURL
+    case invalidResponse
+    case invalidData
+    
+    var errorDescription: String?{
+        switch self{
+        case .invalidCoordinates:
+            return "Invalid User Coordinates"
+        case .invalidURL:
+            return "Invalid URL"
+        case .invalidResponse:
+            return "Invalid Response"
+        case .invalidData:
+            return "Invalid Data"
+        }
+    }
 }

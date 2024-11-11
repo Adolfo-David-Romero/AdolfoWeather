@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ResponseComponentRowView: View {
     let title: String
-    @Binding var response: String
+    var response: String
     
     var body: some View {
         Section(){
@@ -22,5 +22,5 @@ struct ResponseComponentRowView: View {
 }
 
 #Preview {
-    ResponseComponentRowView(title: "Tempature in Cº", response:.constant("Example"))
+    ResponseComponentRowView(title: "Tempature in Cº", response:"Example")
 }
