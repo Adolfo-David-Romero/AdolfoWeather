@@ -11,30 +11,63 @@
 
 import Foundation
 
-// MARK: - WeatherAPI
+
+// MARK: - WeatherModel
 struct WeatherModel: Codable {
     let location: Location
     let current: Current
+}
+
+// MARK: - Location
+struct Location: Codable {
+    let name: String
+    let region: String
+    let country: String
+    let lat: Double
+    let lon: Double
+    let tzID: String
+    let localtimeEpoch: Int
+    let localtime: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, region, country, lat, lon
+        case tzID = "tz_id"
+        case localtimeEpoch = "localtime_epoch"
+        case localtime
+    }
 }
 
 // MARK: - Current
 struct Current: Codable {
     let lastUpdatedEpoch: Int
     let lastUpdated: String
-    let tempC, tempF: Double
+    let tempC: Double
+    let tempF: Double
     let isDay: Int
     let condition: Condition
-    let windMph, windKph: Double
+    let windMph: Double
+    let windKph: Double
     let windDegree: Int
     let windDir: String
-    let pressureMB: Int
-    let pressureIn, precipMm, precipIn: Double
-    let humidity, cloud: Int
-    let feelslikeC, feelslikeF, windchillC, windchillF: Double
-    let heatindexC, heatindexF, dewpointC, dewpointF: Double
-    let visKM, visMiles, uv: Int
-    let gustMph, gustKph: Double
-    let airQuality: [String: Double]
+    let pressureMB: Double
+    let pressureIn: Double
+    let precipMm: Double
+    let precipIn: Double
+    let humidity: Int
+    let cloud: Int
+    let feelslikeC: Double
+    let feelslikeF: Double
+    let windchillC: Double
+    let windchillF: Double
+    let heatindexC: Double
+    let heatindexF: Double
+    let dewpointC: Double
+    let dewpointF: Double
+    let visKM: Double
+    let visMiles: Double
+    let uv: Double
+    let gustMph: Double
+    let gustKph: Double
 
     enum CodingKeys: String, CodingKey {
         case lastUpdatedEpoch = "last_updated_epoch"
@@ -65,28 +98,12 @@ struct Current: Codable {
         case uv
         case gustMph = "gust_mph"
         case gustKph = "gust_kph"
-        case airQuality = "air_quality"
     }
 }
 
 // MARK: - Condition
 struct Condition: Codable {
-    let text, icon: String
+    let text: String
+    let icon: String
     let code: Int
-}
-
-// MARK: - Location
-struct Location: Codable {
-    let name, region, country: String
-    let lat, lon: Double
-    let tzID: String
-    let localtimeEpoch: Int
-    let localtime: String
-
-    enum CodingKeys: String, CodingKey {
-        case name, region, country, lat, lon
-        case tzID = "tz_id"
-        case localtimeEpoch = "localtime_epoch"
-        case localtime
-    }
 }
