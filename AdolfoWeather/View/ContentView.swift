@@ -8,84 +8,47 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var temp_c: String = "hello"
-    @State private var feelslike_c: String = ""
-    @State private var wind_kph: String = ""
-    @State private var wind_dir: String = ""
-    @State private var humidity: String = ""
-    @State private var uv: String = ""
-    @State private var vis_km: String = ""
-    @State private var condition: String = ""
-    @State private var city_name: String = ""
-    @State private var country_name: String = ""
+//    @State private var temp_c: String = "hello"
+//    @State private var feelslike_c: String = ""
+//    @State private var wind_kph: String = ""
+//    @State private var wind_dir: String = ""
+//    @State private var humidity: String = ""
+//    @State private var uv: String = ""
+//    @State private var vis_km: String = ""
+//    @State private var condition: String = ""
+//    @State private var city_name: String = ""
+//    @State private var country_name: String = ""
+    @StateObject var vm = WeatherViewModel()
+    let lm = LocationManager()
     var body: some View {
         
         NavigationStack{
             VStack {
+                Button(
+                    action: {
+                        print("Button Pressed")
+                        Task{
+                            do{
+                                try await
+                                vm.getGeneralWeatherResponse(userCoordinate:   "")
+                            }catch {
+                                
+                                print("Button Pressed: Error \(error)")
+                            }
+                        }
+                        
+                    },
+                    label: {
+                        Text("Retrieve Weather").font(.headline).foregroundStyle(.white)
+                    }).padding(.all, 13.0).background(Color(.blue)).clipShape(.capsule)
                 List{
                     Section("Tempature Data:"){
-                        Section(){
-                            HStack{
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("\(temp_c)").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("").font(.subheadline).fontWeight(.light)
-                            }
-                        }
+                        ResponseComponentRowView(title: "Tempature in Cº",response: .constant("Tempature in Cº:"))
+                        
+                        
                     }
                     Section("Location Data"){
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
-                        Section(){
-                            HStack(){
-                                Text("Tempature in Cº:").fontWeight(.semibold)
-                                Text("st").font(.subheadline).fontWeight(.light)
-                            }
-                        }
+                        ResponseComponentRowView(title: "Tempature in Cº",response: .constant("Tempature in Cº:"))
                     }
                     
                 }.listStyle(.automatic)
