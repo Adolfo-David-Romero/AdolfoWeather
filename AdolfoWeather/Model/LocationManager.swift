@@ -9,8 +9,10 @@ import CoreLocation
 
 class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
     let locationManager = CLLocationManager()
+    let geocoder = CLGeocoder() // using reverse geocoding only for the .onChange, to know if i left the area
     @Published var latitude: Double? = nil
     @Published var longitude: Double? = nil
+    @Published var area: String? = nil
     @Published var errorMessage: String? = nil
     
     override init() {
@@ -21,7 +23,12 @@ class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
     }
     
     func startUpdatingLocation() {
-            locationManager.startUpdatingLocation()
+        locationManager.startUpdatingLocation()
+        
+    }
+    func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+        
     }
     
     //manage location updates
@@ -32,8 +39,17 @@ class LocationManager : NSObject , ObservableObject , CLLocationManagerDelegate{
         }
         latitude = location.coordinate.latitude
         longitude = location.coordinate.longitude
-        print("Location Manager: Latitude -> \(String(describing: latitude)), Longitude -> \(String(describing: longitude))")
-        locationManager.stopUpdatingLocation()
+        
+        // Perform reverse geocoding to get area name
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
+            if let error = error {
+                self?.errorMessage = "Geocoding error: \(error.localizedDescription)"
+            } else if let placemark = placemarks?.first {
+                self?.area = placemark.locality ?? placemark.subLocality ?? placemark.administrativeArea ?? placemark.country
+            }
+        }
+        
+        print("Location Manager: Area -> \(String(describing: area)) Latitude -> \(String(describing: latitude)), Longitude -> \(String(describing: longitude))")
     }
     
     //hanling error on fail

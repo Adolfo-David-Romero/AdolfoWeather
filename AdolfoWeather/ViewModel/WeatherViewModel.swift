@@ -20,6 +20,8 @@ class WeatherViewModel: ObservableObject{
     
     
     func fetchWeatherData(latitude: Double, longitude: Double) {
+        weatherDataList = [] // Clear the current list to avoid duplication
+        
         // Construct the URL string to match the exact format
         let urlStr = "\(baseUrl)?key=\(apiKey)&q=\(latitude),\(longitude)&aqi=yes"
         guard let url = URL(string: urlStr) else {
